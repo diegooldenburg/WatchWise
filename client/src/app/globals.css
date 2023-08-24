@@ -26,13 +26,12 @@ body {
     rgb(var(--background-start-rgb));
 }
 
-nav {
-  position: fixed;
-  top: 0px;
-}
-
 .bg-primary {
   background-color: #232c33;
+}
+
+.bg-secondary {
+  background-color: #191f24;
 }
 
 .text-secondary {
@@ -45,4 +44,8 @@ nav {
 
 .bg-secondary-button {
   background-color: #aafcb8;
+}
+
+.border-custom-color {
+  border-color: #8ba0af;
 }

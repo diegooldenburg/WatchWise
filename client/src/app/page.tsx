@@ -1,11 +1,13 @@
 import Image from "next/image";
 import Navbar from "../components/Navbar";
+import LandingCarousel from "@/components/LandingCarousel";
 
 export default function Home() {
   return (
     <div className="bg-primary text-secondary h-screen flex flex-col items-center justify-center">
       <Navbar />
-      <h1 className="text-secondary">Welcome to WatchWise!</h1>
+      <LandingCarousel />
+      {/* <h1 className="text-secondary">Welcome to WatchWise!</h1>
       <p className="text-secondary">
         Plan your next month's movies and TV shows with us and we'll tell you
         which streaming services you'll need.
@@ -25,7 +27,7 @@ export default function Home() {
           subscribe to. We make use of the IMDB API and the JustWatch API to
           provide accurate and up-to-date information.
         </p>
-      </div>
+      </div> */}
     </div>
   );
 }
