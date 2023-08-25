@@ -1,4 +1,12 @@
-const Navbar = () => {
+"use client";
+import { useState } from "react";
+
+interface NavbarProps {
+  openLoginModal: () => void;
+  openSignupModal: () => void;
+}
+
+const Navbar: React.FC<NavbarProps> = ({ openLoginModal, openSignupModal }) => {
   return (
     <nav className="flex justify-between bg-secondary p-6 fixed top-0 w-full">
       <div className="text-white mr-6">
@@ -6,10 +14,16 @@ const Navbar = () => {
       </div>
       <div>
         <div>
-          <button className="text-sm px-4 py-2 leading-none border rounded text-black bg-primary-button border-transparent hover:bg-primary-button-hover mt-4 lg:mt-0">
+          <button
+            onClick={openSignupModal}
+            className="text-sm px-4 py-2 leading-none border rounded text-black bg-primary-button border-transparent hover:bg-primary-button-hover mt-4 lg:mt-0"
+          >
             Sign Up
           </button>
-          <button className="text-sm px-4 py-2 leading-none border rounded text-black bg-secondary-button border-transparent hover:bg-secondary-button-hover   mt-4 lg:mt-0 ml-2">
+          <button
+            onClick={openLoginModal}
+            className="text-sm px-4 py-2 leading-none border rounded text-black bg-secondary-button border-transparent hover:bg-secondary-button-hover   mt-4 lg:mt-0 ml-2"
+          >
             Log In
           </button>
         </div>
