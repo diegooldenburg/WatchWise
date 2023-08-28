@@ -12,7 +12,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, closeModal }) => {
   const [password, setPassword] = useState("");
 
   const login = async () => {
-    const response = await fetch("https://your-api-url/account/login", {
+    const response = await fetch("http://localhost:5249/Account/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

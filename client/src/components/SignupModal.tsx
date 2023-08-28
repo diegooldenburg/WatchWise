@@ -9,16 +9,38 @@ interface SignupModalProps {
 
 const SignupModal: React.FC<SignupModalProps> = ({ isOpen, closeModal }) => {
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+
+  const validatePassword = (password: string) => {
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    return passwordRegex.test(password);
+  };
 
   const signup = async () => {
-    const response = await fetch("https://your-api-url/account/register", {
+    if (password !== confirmPassword) {
+      setPasswordError("Passwords do not match");
+      return;
+    }
+
+    if (!validatePassword(password)) {
+      setPasswordError(
+        "Password must be at least 8 characters, contain one uppercase letter, one number, and one special character"
+      );
+      return;
+    }
+
+    const response = await fetch("http://localhost:5249/Account/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
         username,
+        email,
         password,
       }),
     });
@@ -64,11 +86,27 @@ const SignupModal: React.FC<SignupModalProps> = ({ isOpen, closeModal }) => {
                     onChange={(e) => setUsername(e.target.value)}
                   />
                   <input
+                    type="email"
+                    placeholder="Email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                  <input
                     type="password"
                     placeholder="Password"
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      setPasswordError("");
+                    }}
                   />
+                  <input
+                    type="password"
+                    placeholder="Confirm Password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                  />
+                  {passwordError && <div>{passwordError}</div>}
                 </div>
               </div>
             </div>
