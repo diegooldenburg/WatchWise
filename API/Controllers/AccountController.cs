@@ -56,16 +56,16 @@ public class AccountController : ControllerBase
     [HttpPost("login")]
     public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
     {
-        var result = await _signInManager.PasswordSignInAsync(loginDto.Username, loginDto.Password, isPersistent: false, lockoutOnFailure: false);
+        var user = await _userManager.FindByNameAsync(loginDto.Username);
+        if (user == null)
+            return Unauthorized("Invalid username");
 
-        if (result.Succeeded)
-        {
-            var user = await _userManager.FindByNameAsync(loginDto.Username);
-            var token = await _tokenService.CreateToken(user);
-            return Ok(new UserDto { Username = user.UserName, Token = token });
-        }
+        var result = await _userManager.CheckPasswordAsync(user, loginDto.Password);
+        if (!result)
+            return Unauthorized();
 
-        return Unauthorized();
+        var token = await _tokenService.CreateToken(user);
+        return Ok(new UserDto { Username = user.UserName, Token = token });
     }
 
     private async Task<bool> UserExists(string username)

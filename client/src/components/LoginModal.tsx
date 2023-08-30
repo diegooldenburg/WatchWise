@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+import { useState, useContext } from "react";
+import { LoginContext } from "@/contexts/LoginContext";
 import React from "react";
 
 interface LoginModalProps {
@@ -10,6 +11,7 @@ interface LoginModalProps {
 const LoginModal: React.FC<LoginModalProps> = ({ isOpen, closeModal }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const { setLogin } = useContext(LoginContext);
 
   const login = async () => {
     const response = await fetch("http://localhost:5249/Account/login", {
@@ -25,6 +27,8 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, closeModal }) => {
 
     if (response.ok) {
       console.log("Login successful");
+      setLogin(true);
+      closeModal();
     } else {
       console.log("Login failed");
     }
