@@ -1,7 +1,13 @@
 import React from "react";
 import Link from "next/link";
 
-const MyListsComponent = () => {
+interface MyListsComponentProps {
+  setSelectedList: (listName: string) => void;
+}
+
+const MyListsComponent: React.FC<MyListsComponentProps> = ({
+  setSelectedList,
+}) => {
   const currentMonth = new Date().getMonth();
   const nextMonth = (currentMonth + 1) % 12;
   const monthNames = [
@@ -18,29 +24,28 @@ const MyListsComponent = () => {
     "November",
     "December",
   ];
-  const lists = [monthNames[nextMonth]];
 
   return (
     <div className="flex justify-between bg-primary p-6 fixed">
       <ul className="">
-        {lists.map((list, index) => (
-          <li
-            key={index}
-            className="flex justify-between items-center bg-secondary text-white rounded-lg m-2 p-2 h-16 w-screen"
+        <li className="flex justify-between items-center bg-secondary text-white rounded-lg m-2 p-2 h-16 w-screen">
+          <div
+            className="cursor-pointer"
+            onClick={() => setSelectedList(monthNames[nextMonth])}
           >
-            <Link href={`/list/${list}`}>{list}</Link>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 12 12"
-              fill="white"
-              className="h-8 w-8"
-            >
-              <path d="M6,3 C6.27614237,3 6.5,2.77614237 6.5,2.5 C6.5,2.22385763 6.27614237,2 6,2 C5.72385763,2 5.5,2.22385763 5.5,2.5 C5.5,2.77614237 5.72385763,3 6,3 Z" />
-              <path d="M6,6.5 C6.27614237,6.5 6.5,6.27614237 6.5,6 C6.5,5.72385763 6.27614237,5.5 6,5.5 C5.72385763,5.5 5.5,5.72385763 5.5,6 C5.5,6.27614237 5.72385763,6.5 6,6.5 Z" />
-              <path d="M6,10 C6.27614237,10 6.5,9.77614237 6.5,9.5 C6.5,9.22385763 6.27614237,9 6,9 C5.72385763,9 5.5,9.22385763 5.5,9.5 C5.5,9.77614237 5.72385763,10 6,10 Z" />
-            </svg>
-          </li>
-        ))}
+            {monthNames[nextMonth]}
+          </div>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 12 12"
+            fill="white"
+            className="h-8 w-8"
+          >
+            <path d="M6,3 C6.27614237,3 6.5,2.77614237 6.5,2.5 C6.5,2.22385763 6.27614237,2 6,2 C5.72385763,2 5.5,2.22385763 5.5,2.5 C5.5,2.77614237 5.72385763,3 6,3 Z" />
+            <path d="M6,6.5 C6.27614237,6.5 6.5,6.27614237 6.5,6 C6.5,5.72385763 6.27614237,5.5 6,5.5 C5.72385763,5.5 5.5,5.72385763 5.5,6 C5.5,6.27614237 5.72385763,6.5 6,6.5 Z" />
+            <path d="M6,10 C6.27614237,10 6.5,9.77614237 6.5,9.5 C6.5,9.22385763 6.27614237,9 6,9 C5.72385763,9 5.5,9.22385763 5.5,9.5 C5.5,9.77614237 5.72385763,10 6,10 Z" />
+          </svg>
+        </li>
         <li className="flex items-center bg-secondary text-white rounded-lg m-2 p-2 h-16 w-16">
           <svg
             xmlns="http://www.w3.org/2000/svg"
