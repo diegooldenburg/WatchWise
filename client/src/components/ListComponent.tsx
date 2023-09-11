@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from "react";
 
 interface Media {
-  title: string;
+  title?: string;
+  name?: string;
   id: number;
+  poster_path: string | null;
+  release_date: string;
+  first_air_date?: string;
 }
 
 interface ListComponentProps {
@@ -16,33 +20,38 @@ const ListComponent: React.FC<ListComponentProps> = ({ listName }) => {
   const [suggestions, setSuggestions] = useState<Media[]>([]);
 
   useEffect(() => {
-    // Fetch the items of the list here
-  }, [listName]);
-
-  useEffect(() => {
     if (searchTerm === "") {
       setSuggestions([]);
       return;
     }
 
     const search = async () => {
-      // Call the TMDB API to search for the movie
-      const movieResponse = await fetch(
-        `https://api.themoviedb.org/3/search/movie?query=${searchTerm}&api_key=${process.env.REACT_APP_TMDB_API_KEY}`
-      );
-      const movieData = await movieResponse.json();
+      try {
+        const response = await fetch(
+          `https://api.themoviedb.org/3/search/multi?query=${searchTerm}&api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}`
+        );
+        const data = await response.json();
 
-      // Call the TMDB API to search for the TV show
-      const tvResponse = await fetch(
-        `https://api.themoviedb.org/3/search/tv?query=${searchTerm}&api_key=${process.env.REACT_APP_TMDB_API_KEY}`
-      );
-      const tvData = await tvResponse.json();
+        let results = data.results
+          .filter((item: any) => item.media_type !== "person")
+          .map((item: any) => ({
+            title: item.title || item.name,
+            id: item.id,
+            poster_path: item.poster_path,
+            release_date: item.release_date || item.first_air_date,
+          }));
 
-      // Combine the results
-      const results = [...movieData.results, ...tvData.results];
+        results = results.filter(
+          (item: Media) =>
+            (item.title || item.name) &&
+            (item.title || item.name || "").trim() !== ""
+        );
 
-      // Update the suggestions
-      setSuggestions(results);
+        // Limit the results to 5 and update the suggestions
+        setSuggestions(results.slice(0, 5));
+      } catch (error) {
+        console.error("Error fetching data: ", error);
+      }
     };
 
     search();
@@ -57,7 +66,7 @@ const ListComponent: React.FC<ListComponentProps> = ({ listName }) => {
   };
 
   const selectSuggestion = (media: Media) => {
-    setSearchTerm(media.title);
+    setSearchTerm(media.title || media.name || "");
     setSelectedMedia(media);
     setSuggestions([]);
   };
@@ -84,19 +93,47 @@ const ListComponent: React.FC<ListComponentProps> = ({ listName }) => {
               <li
                 key={index}
                 onClick={() => selectSuggestion(item)}
-                className="px-4 py-2 cursor-pointer hover:bg-gray-200"
+                className="px-4 py-2 cursor-pointer hover:bg-gray-200 flex items-center"
               >
-                {item.title}
+                <img
+                  src={`https://image.tmdb.org/t/p/w500${item.poster_path}`}
+                  alt={item.title || item.name || ""}
+                  className="w-10 h-10 object-cover mr-2"
+                />
+                {item.title || item.name || ""}{" "}
+                <span className="text-gray-500">
+                  (
+                  {(item.release_date || item.first_air_date || "").substring(
+                    0,
+                    4
+                  )}
+                  )
+                </span>
               </li>
             ))}
           </ul>
         )}
       </div>
-      <ul>
+      <div className="grid grid-cols-3 gap-4 mt-8">
         {list.map((item, index) => (
-          <li key={index}>{item.title}</li>
+          <div key={index} className="card">
+            <img
+              src={`https://image.tmdb.org/t/p/w500${item.poster_path}`}
+              alt={item.title || item.name || ""}
+              className="w-full h-64 object-cover"
+            />
+            <div className="p-4">
+              <h2 className="font-bold">{item.title || item.name}</h2>
+              <p className="text-sm text-gray-500">
+                {(item.release_date || item.first_air_date || "").substring(
+                  0,
+                  4
+                )}
+              </p>
+            </div>
+          </div>
         ))}
-      </ul>
+      </div>
     </div>
   );
 };
