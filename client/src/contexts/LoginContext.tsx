@@ -1,6 +1,32 @@
-import React from "react";
+import React, { createContext, ReactNode } from "react";
+import { useSession, signOut } from "next-auth/react";
 
-export const LoginContext = React.createContext({
+interface LoginContextProps {
+  isLoggedIn: boolean;
+  logout: () => void;
+}
+
+export const LoginContext = createContext<LoginContextProps>({
   isLoggedIn: false,
-  setLogin: (value: boolean) => {},
+  logout: () => {},
 });
+
+interface LoginProviderProps {
+  children: ReactNode;
+}
+
+export const LoginProvider = ({ children }: LoginProviderProps) => {
+  const { data: session, status } = useSession();
+
+  const logout = () => {
+    signOut();
+  };
+
+  return (
+    <LoginContext.Provider
+      value={{ isLoggedIn: status === "authenticated", logout }}
+    >
+      {children}
+    </LoginContext.Provider>
+  );
+};

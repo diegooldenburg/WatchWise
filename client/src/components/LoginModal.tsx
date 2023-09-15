@@ -1,7 +1,5 @@
-"use client";
-import { useState, useContext } from "react";
-import { LoginContext } from "@/contexts/LoginContext";
-import React from "react";
+import { useState } from "react";
+import { signIn } from "next-auth/react";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -11,27 +9,11 @@ interface LoginModalProps {
 const LoginModal: React.FC<LoginModalProps> = ({ isOpen, closeModal }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const { setLogin } = useContext(LoginContext);
 
-  const login = async () => {
-    const response = await fetch("http://localhost:5249/Account/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username,
-        password,
-      }),
-    });
-
-    if (response.ok) {
-      console.log("Login successful");
-      setLogin(true);
-      closeModal();
-    } else {
-      console.log("Login failed");
-    }
+  const handleLogin = async (event: React.MouseEvent) => {
+    event.preventDefault();
+    await signIn("credentials", { username, password, callbackUrl: "/" });
+    closeModal();
   };
 
   if (!isOpen) {
@@ -81,7 +63,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, closeModal }) => {
             <button
               type="button"
               className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
-              onClick={login}
+              onClick={handleLogin}
             >
               Log In
             </button>
