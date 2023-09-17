@@ -72,4 +72,15 @@ public class AccountController : ControllerBase
     {
         return await _userManager.Users.AnyAsync(x => x.UserName == username.ToLower());
     }
+
+    [HttpPost("token/create")]
+    public async Task<ActionResult<string>> CreateToken(UserDto userDto)
+    {
+        var user = await _userManager.FindByNameAsync(userDto.Username);
+        if (user == null)
+            return Unauthorized("Invalid username");
+
+        var token = await _tokenService.CreateToken(user);
+        return Ok(new { accessToken = token });
+    }
 }

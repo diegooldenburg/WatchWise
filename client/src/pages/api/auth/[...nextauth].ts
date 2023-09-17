@@ -1,22 +1,10 @@
-import NextAuth from "next-auth";
+import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import type { Account } from "next-auth";
-import { Session } from "next-auth";
 
-declare module "next-auth" {
-  interface Session {
-    accessToken: string;
-  }
-}
-
-interface UserCredentials {
-  id: string;
-  name: string;
-  email: string;
-  token: string;
-}
-
-export default NextAuth({
+const authOptions: NextAuthOptions = {
+  session: {
+    strategy: "jwt",
+  },
   providers: [
     CredentialsProvider({
       id: "credentials",
@@ -25,38 +13,29 @@ export default NextAuth({
         username: { label: "Username", type: "text" },
         password: { label: "Password", type: "password" },
       },
-      authorize: async (credentials): Promise<UserCredentials | null> => {
-        const res = await fetch("http://localhost:5249/Account/login", {
+      async authorize(credentials) {
+        const res = await fetch("/api/account/login", {
           method: "POST",
-          body: JSON.stringify(credentials),
           headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(credentials),
         });
-
         const data = await res.json();
-
-        if (res.ok && data && data.user) {
-          return {
-            id: data.user.id.toString(),
-            name: data.user.username,
-            email: data.user.email,
-            token: data.token,
-          };
-        } else {
-          return null;
+        if (res.ok && data) {
+          return data.user; // this will include user details
         }
+        return null;
       },
     }),
   ],
   callbacks: {
-    jwt: async ({ token, account }) => {
+    async jwt({ token, user, account }) {
       if (account) {
-        token.accessToken = account.token;
+        // account object is returned from the authorize function
+        token.accessToken = account.accessToken;
       }
       return token;
     },
-    session: async ({ session, token }) => {
-      session.accessToken = token.accessToken as string;
-      return session;
-    },
   },
-});
+};
+
+export default NextAuth(authOptions);
