@@ -12,8 +12,22 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, closeModal }) => {
 
   const handleLogin = async (event: React.MouseEvent) => {
     event.preventDefault();
-    await signIn("credentials", { username, password, callbackUrl: "/" });
-    closeModal();
+    try {
+      const result = await signIn("credentials", {
+        username,
+        password,
+        callbackUrl: "/",
+        redirect: false,
+      });
+      if (result && !result.error) {
+        console.log("Sign in successful");
+        closeModal();
+      } else if (result) {
+        console.error("Sign in error:", result.error); //replace with toast or something
+      }
+    } catch (error) {
+      console.error("Sign in error:", error);
+    }
   };
 
   if (!isOpen) {
@@ -63,9 +77,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, closeModal }) => {
             <button
               type="button"
               className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
-              onClick={() => {
-                signIn();
-              }}
+              onClick={handleLogin}
             >
               Log In
             </button>

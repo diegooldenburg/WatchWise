@@ -17,6 +17,7 @@ interface LoginProviderProps {
 
 export const LoginProvider = ({ children }: LoginProviderProps) => {
   const { data: session, status } = useSession();
+  console.log(session, status);
 
   const logout = () => {
     signOut();

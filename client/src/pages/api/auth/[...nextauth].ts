@@ -14,24 +14,34 @@ const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        const res = await fetch("/api/account/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(credentials),
-        });
-        const data = await res.json();
-        if (res.ok && data) {
-          return data.user; // this will include user details
+        try {
+          const res = await fetch("http://localhost:5249/Account/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(credentials),
+          });
+          console.log(credentials);
+          if (!res.ok) {
+            console.error(
+              `Error response from /api/account/login: ${res.status} ${res.statusText}`
+            );
+            return null;
+          }
+          const data = await res.json();
+          console.log({ id: data.username, accessToken: data.token });
+          return { id: data.username, accessToken: data.token };
+        } catch (error) {
+          console.error(`Error in authorize function: ${error}`);
+          return null;
         }
-        return null;
       },
     }),
   ],
   callbacks: {
-    async jwt({ token, user, account }) {
+    async jwt({ token, account }) {
       if (account) {
-        // account object is returned from the authorize function
-        token.accessToken = account.accessToken;
+        // user object is returned from the authorize function
+        token.accessToken = account.accessToken; // set accessToken to user.token
       }
       return token;
     },
