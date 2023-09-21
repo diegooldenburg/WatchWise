@@ -1,13 +1,10 @@
 import React from "react";
-import Link from "next/link";
 
-interface MyListsComponentProps {
+interface MyListsProps {
   setSelectedList: (listName: string) => void;
 }
 
-const MyListsComponent: React.FC<MyListsComponentProps> = ({
-  setSelectedList,
-}) => {
+const MyLists: React.FC<MyListsProps> = ({ setSelectedList }) => {
   const currentMonth = new Date().getMonth();
   const nextMonth = (currentMonth + 1) % 12;
   const monthNames = [
@@ -66,4 +63,4 @@ const MyListsComponent: React.FC<MyListsComponentProps> = ({
   );
 };
 
-export default MyListsComponent;
+export default MyLists;

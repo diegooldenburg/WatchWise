@@ -1,6 +1,5 @@
-import { useContext } from "react";
+import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
-import { LoginContext } from "@/contexts/LoginContext";
 
 interface NavbarProps {
   openLoginModal: () => void;
@@ -13,7 +12,8 @@ const Navbar: React.FC<NavbarProps> = ({
   openSignupModal,
   openList,
 }) => {
-  const { isLoggedIn } = useContext(LoginContext);
+  const { data: session } = useSession();
+  const isLoggedIn = session ? true : false;
 
   return (
     <nav className="flex justify-between bg-secondary p-6 fixed top-0 w-full">
@@ -35,11 +35,12 @@ const Navbar: React.FC<NavbarProps> = ({
             <button className="text-sm px-4 py-2 leading-none border rounded text-black bg-secondary-button border-transparent hover:bg-secondary-button-hover mt-4 lg:mt-0 ml-2">
               Movies
             </button>
-            <input
-              type="text"
-              placeholder="Search"
-              className="ml-2 px-2 py-1 border rounded"
-            />
+            <button
+              className="text-sm px-4 py-2 leading-none border rounded text-black bg-primary-button border-transparent hover:bg-primary-button-hover mt-4 lg:mt-0 ml-2"
+              onClick={() => signOut()}
+            >
+              Log Out
+            </button>
           </>
         ) : (
           <>
