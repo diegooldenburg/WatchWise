@@ -1,34 +1,30 @@
-"use client";
 import { SessionProvider } from "next-auth/react";
-import Navbar from "../components/Navbar";
+import Navbar from "@/components/Navbar";
 import LandingCarousel from "@/components/LandingCarousel";
 import ListComponent from "@/components/ListComponent";
-import MyLists from "@/components/MyLists";
-import LoginModal from "../components/LoginModal";
-import SignupModal from "../components/SignupModal";
+import LoginModal from "@/components/LoginModal";
+import SignupModal from "@/components/SignupModal";
 import { useState } from "react";
 import { GetServerSidePropsContext } from "next";
 import { getSession } from "next-auth/react";
 import { Session } from "next-auth";
+import { NavbarProvider, useNavbarContext } from "@/contexts/NavbarContext";
 
 export default function Home({ session }: { session: Session | null }) {
-  const [showLoginModal, setShowLoginModal] = useState(false);
-  const [showSignupModal, setShowSignupModal] = useState(false);
-  const [showList, setShowList] = useState(false);
   const [selectedList, setSelectedList] = useState("");
+  const {
+    showLoginModal,
+    setShowLoginModal,
+    showSignupModal,
+    setShowSignupModal,
+  } = useNavbarContext();
 
   return (
     <SessionProvider session={session}>
       <div className="bg-primary text-secondary h-screen flex flex-col items-center justify-center">
-        <Navbar
-          openLoginModal={() => setShowLoginModal(true)}
-          openSignupModal={() => setShowSignupModal(true)}
-          openList={() => setShowList(true)}
-        />
+        <Navbar />
         {selectedList ? (
           <ListComponent listName={selectedList} />
-        ) : showList ? (
-          <MyLists setSelectedList={setSelectedList} />
         ) : (
           <LandingCarousel />
         )}

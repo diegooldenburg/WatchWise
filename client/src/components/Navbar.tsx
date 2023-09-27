@@ -1,19 +1,19 @@
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
+import { useNavbarContext } from "../contexts/NavbarContext";
 
-interface NavbarProps {
-  openLoginModal: () => void;
-  openSignupModal: () => void;
-  openList: () => void;
-}
-
-const Navbar: React.FC<NavbarProps> = ({
-  openLoginModal,
-  openSignupModal,
-  openList,
-}) => {
+const Navbar: React.FC = () => {
   const { data: session } = useSession();
   const isLoggedIn = session ? true : false;
+
+  const {
+    showLoginModal,
+    setShowLoginModal,
+    showSignupModal,
+    setShowSignupModal,
+    showList,
+    setShowList,
+  } = useNavbarContext();
 
   return (
     <nav className="flex justify-between bg-secondary p-6 fixed top-0 w-full">
@@ -22,37 +22,23 @@ const Navbar: React.FC<NavbarProps> = ({
       </div>
       <div className="flex items-center">
         {isLoggedIn ? (
-          <>
-            <button
-              className="text-sm px-4 py-2 leading-none border rounded text-black bg-primary-button border-transparent hover:bg-primary-button-hover mt-4 lg:mt-0"
-              onClick={openList}
-            >
-              My Lists
-            </button>
-            <button className="text-sm px-4 py-2 leading-none border rounded text-black bg-secondary-button border-transparent hover:bg-secondary-button-hover mt-4 lg:mt-0 ml-2">
-              TV Shows
-            </button>
-            <button className="text-sm px-4 py-2 leading-none border rounded text-black bg-secondary-button border-transparent hover:bg-secondary-button-hover mt-4 lg:mt-0 ml-2">
-              Movies
-            </button>
-            <button
-              className="text-sm px-4 py-2 leading-none border rounded text-black bg-primary-button border-transparent hover:bg-primary-button-hover mt-4 lg:mt-0 ml-2"
-              onClick={() => signOut()}
-            >
-              Log Out
-            </button>
-          </>
+          <Link
+            href="/my-lists"
+            className="text-sm px-4 py-2 leading-none border rounded text-black bg-primary-button border-transparent hover:bg-primary-button-hover mt-4 lg:mt-0"
+          >
+            My Lists
+          </Link>
         ) : (
           <>
             <button
-              onClick={openSignupModal}
+              onClick={() => setShowSignupModal(true)}
               className="text-sm px-4 py-2 leading-none border rounded text-black bg-primary-button border-transparent hover:bg-primary-button-hover mt-4 lg:mt-0"
             >
               Sign Up
             </button>
             <button
-              onClick={openLoginModal}
-              className="text-sm px-4 py-2 leading-none border rounded text-black bg-secondary-button border-transparent hover:bg-secondary-button-hover   mt-4 lg:mt-0 ml-2"
+              onClick={() => setShowLoginModal(true)}
+              className="text-sm px-4 py-2 leading-none border rounded text-black bg-secondary-button border-transparent hover:bg-secondary-button-hover mt-4 lg:mt-0 ml-2"
             >
               Log In
             </button>
