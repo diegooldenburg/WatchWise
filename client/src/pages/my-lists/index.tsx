@@ -6,7 +6,7 @@ export default function MyListsPage() {
   const { setShowList } = useNavbarContext();
 
   return (
-    <div className="bg-primary text-secondary min-h-screen">
+    <div className="bg-primary text-secondary h-screen flex flex-col items-center justify-center">
       <Navbar />
       <MyLists
         setSelectedList={(listName: string) => {

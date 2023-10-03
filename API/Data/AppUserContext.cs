@@ -7,4 +7,7 @@ public class AppUserContext : IdentityDbContext
         : base(options)
     {
     }
+
+    public DbSet<List> Lists { get; set; }
+    public DbSet<ListItem> ListItems { get; set; }
 }

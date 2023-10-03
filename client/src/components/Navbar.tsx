@@ -1,6 +1,6 @@
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
-import { useNavbarContext } from "../contexts/NavbarContext";
+import { useNavbarContext } from "@/contexts/NavbarContext";
 
 const Navbar: React.FC = () => {
   const { data: session } = useSession();
@@ -11,8 +11,6 @@ const Navbar: React.FC = () => {
     setShowLoginModal,
     showSignupModal,
     setShowSignupModal,
-    showList,
-    setShowList,
   } = useNavbarContext();
 
   return (
