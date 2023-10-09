@@ -13,8 +13,12 @@ public class AccountController : ControllerBase
     private readonly ITokenService _tokenService;
     private readonly IEmailService _emailService;
 
-
-    public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, ITokenService tokenService, IEmailService emailService)
+    public AccountController(
+        UserManager<IdentityUser> userManager,
+        SignInManager<IdentityUser> signInManager,
+        ITokenService tokenService,
+        IEmailService emailService
+    )
     {
         _userManager = userManager;
         _signInManager = signInManager;
@@ -25,7 +29,8 @@ public class AccountController : ControllerBase
     [HttpPost("register")]
     public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
     {
-        if (await UserExists(registerDto.Username)) return BadRequest("Username is taken");
+        if (await UserExists(registerDto.Username))
+            return BadRequest("Username is taken");
 
         var user = new IdentityUser
         {
@@ -35,16 +40,27 @@ public class AccountController : ControllerBase
 
         var result = await _userManager.CreateAsync(user, registerDto.Password);
 
-        if (!result.Succeeded) return BadRequest(result.Errors);
+        if (!result.Succeeded)
+            return BadRequest(result.Errors);
 
         var roleResult = await _userManager.AddToRoleAsync(user, "Member");
 
-        if (!roleResult.Succeeded) return BadRequest(result.Errors);
+        if (!roleResult.Succeeded)
+            return BadRequest(result.Errors);
 
         var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-        var confirmationLink = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, token = token }, Request.Scheme);
+        var confirmationLink = Url.Action(
+            "ConfirmEmail",
+            "Account",
+            new { userId = user.Id, token = token },
+            Request.Scheme
+        );
 
-        await _emailService.SendEmailAsync(registerDto.Email, "Confirm your email", $"Please confirm your account by <a href='{confirmationLink}'>clicking here</a>.");
+        await _emailService.SendEmailAsync(
+            registerDto.Email,
+            "Confirm your email",
+            $"Please confirm your account by <a href='{confirmationLink}'>clicking here</a>."
+        );
 
         return new UserDto
         {
@@ -82,5 +98,12 @@ public class AccountController : ControllerBase
 
         var token = await _tokenService.CreateToken(user);
         return Ok(new { accessToken = token });
+    }
+
+    [HttpPost("token/validate")]
+    public async Task<ActionResult<bool>> ValidateToken([FromBody] TokenDto tokenDto)
+    {
+        var isValid = await _tokenService.ValidateToken(tokenDto.Token);
+        return Ok(isValid);
     }
 }

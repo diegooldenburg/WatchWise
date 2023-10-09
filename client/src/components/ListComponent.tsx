@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-interface Media {
+export interface Media {
   title?: string;
   name?: string;
   id: number;
@@ -11,12 +11,17 @@ interface Media {
 
 interface ListComponentProps {
   listName: string;
+  list: Media[];
+  addItemToList: (item: Media) => void;
 }
 
-const ListComponent: React.FC<ListComponentProps> = ({ listName }) => {
+const ListComponent: React.FC<ListComponentProps> = ({
+  listName,
+  list,
+  addItemToList,
+}) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedMedia, setSelectedMedia] = useState<Media | null>(null);
-  const [list, setList] = useState<Media[]>([]);
   const [suggestions, setSuggestions] = useState<Media[]>([]);
 
   useEffect(() => {
@@ -59,7 +64,7 @@ const ListComponent: React.FC<ListComponentProps> = ({ listName }) => {
 
   const addToTheList = () => {
     if (selectedMedia) {
-      setList((prevList) => [...prevList, selectedMedia]);
+      addItemToList(selectedMedia);
       setSearchTerm("");
       setSelectedMedia(null);
     }

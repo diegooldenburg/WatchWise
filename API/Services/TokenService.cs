@@ -11,6 +11,7 @@ namespace API.Services
     {
         private readonly SymmetricSecurityKey _key;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly IConfiguration _config;
 
         public TokenService(IConfiguration config, UserManager<IdentityUser> userManager)
         {
@@ -40,16 +41,10 @@ namespace API.Services
             return tokenHandler.WriteToken(token);
         }
 
-        public bool ValidateToken(string token)
+        public async Task<bool> ValidateToken(string token)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var validationParameters = new TokenValidationParameters
-            {
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = _key,
-                ValidateIssuer = false,
-                ValidateAudience = false
-            };
+            var validationParameters = GetValidationParameters();
 
             try
             {
@@ -60,6 +55,22 @@ namespace API.Services
             {
                 return false;
             }
+        }
+
+        private TokenValidationParameters GetValidationParameters()
+        {
+            return new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = _config["Jwt:Issuer"],
+                ValidAudience = _config["Jwt:Audience"],
+                IssuerSigningKey = new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(_config["Jwt:Key"])
+                )
+            };
         }
     }
 }

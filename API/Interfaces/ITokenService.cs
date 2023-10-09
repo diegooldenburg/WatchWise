@@ -5,5 +5,6 @@ namespace API.Interfaces
     public interface ITokenService
     {
         Task<string> CreateToken(IdentityUser user);
+        Task<bool> ValidateToken(string token);
     }
 }

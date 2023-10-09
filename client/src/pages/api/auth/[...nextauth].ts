@@ -1,5 +1,10 @@
-import NextAuth, { NextAuthOptions } from "next-auth";
+import NextAuth, { NextAuthOptions, Session } from "next-auth";
+import { JWT } from "next-auth/jwt";
 import CredentialsProvider from "next-auth/providers/credentials";
+
+interface ExtendedSession extends Session {
+  accessToken?: string;
+}
 
 const authOptions: NextAuthOptions = {
   session: {
@@ -28,6 +33,7 @@ const authOptions: NextAuthOptions = {
             return null;
           }
           const data = await res.json();
+          console.log("authorize data:", data);
           console.log({ id: data.username, accessToken: data.token });
           return { id: data.username, accessToken: data.token };
         } catch (error) {
@@ -40,10 +46,21 @@ const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, account }) {
       if (account) {
-        // user object is returned from the authorize function
-        token.accessToken = account.accessToken; // set accessToken to user.token
+        token.accessToken = account.accessToken as string | undefined;
       }
+      console.log("jwt callback token:", token);
       return token;
+    },
+    async session({
+      session,
+      token,
+    }: {
+      session: ExtendedSession;
+      token: JWT;
+    }) {
+      session.accessToken = token.accessToken as string | undefined;
+      console.log("session callback session:", session);
+      return session;
     },
   },
 };

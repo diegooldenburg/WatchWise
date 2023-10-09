@@ -6,11 +6,12 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddDbContext<AppUserContext>(options =>
-    options.UseSqlite(
-        builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<AppUserContext>(
+    options => options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"))
+);
 
-builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+builder.Services
+    .AddIdentity<IdentityUser, IdentityRole>(options =>
     {
         options.Password.RequireDigit = true;
         options.Password.RequireLowercase = true;
@@ -23,12 +24,15 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
     .AddDefaultTokenProviders();
 
 builder.Services.AddControllers();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
-var roleManager = builder.Services.BuildServiceProvider().GetRequiredService<RoleManager<IdentityRole>>();
+var roleManager = builder.Services
+    .BuildServiceProvider()
+    .GetRequiredService<RoleManager<IdentityRole>>();
 
 if (!await roleManager.RoleExistsAsync("Member"))
 {
@@ -38,9 +42,9 @@ if (!await roleManager.RoleExistsAsync("Member"))
 var app = builder.Build();
 
 app.UseCors(
-    x =>
-        x.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("http://localhost:3000")
+    x => x.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("http://localhost:3000")
 );
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
